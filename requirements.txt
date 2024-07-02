@@ -2,4 +2,4 @@ streamlit
 txtai
 PyPDF2
 rouge-score
-faiss-cpu
+faiss-cpu==1.7.2
