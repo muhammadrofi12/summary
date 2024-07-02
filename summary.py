@@ -1,5 +1,5 @@
 import streamlit as st
-from txtai.pipeline import Summary
+from transformers import pipeline
 from PyPDF2 import PdfFileReader
 from rouge_score import rouge_scorer
 
@@ -12,10 +12,9 @@ def calculate_rouge(generated_summary, reference_summary):
 
 @st.cache_resource
 def summary_text(text):
-    summary = Summary()
-    text = (text)
-    result = summary(text)
-    return result
+    summarizer = pipeline("summarization")
+    summary = summarizer(text, max_length=150, min_length=30, do_sample=False)
+    return summary[0]['summary_text']
 
 # Extract text from the PDF file using pyPDF2
 def extract_text_from_pdf(file_path):
@@ -29,10 +28,10 @@ choice = st.sidebar.selectbox('select your choice', ['Summarize Text', 'Summariz
 
 if choice == 'Summarize Text':
     st.title('_SummarizeME_ is :blue[cool] :sunglasses:')
-    st.text('Ini adalah website _text summary_  yang dapat memudahkan dalam merangkum sebuah paragraph.')
-    st.text('website ini disusun oleh: Syayid Muhammad Akbar, Reski Junaidi Shalat, Muhammad Rofiul Arham, Reva Aulia,dan Sintia Sari.')
+    st.text('Ini adalah website _text summary_ yang dapat memudahkan dalam merangkum sebuah paragraph.')
+    st.text('Website ini disusun oleh: Syayid Muhammad Akbar, Reski Junaidi Shalat, Muhammad Rofiul Arham, Reva Aulia, dan Sintia Sari.')
     input_text = st.text_area('Enter your text here !')
-    if input_text is not None:
+    if input_text:
         if st.button('Summarize Text'):
             col1, col2 = st.columns([1,1])
             with col1:
@@ -41,10 +40,10 @@ if choice == 'Summarize Text':
             with col2:
                 result = summary_text(input_text)
                 st.markdown("***Summary***")
-                st.success(result)\
+                st.success(result)
                 
                 # Add reference summary for ROUGE evaluation
-                reference_summary = (input_text)
+                reference_summary = input_text
 
                 # Calculate ROUGE scores
                 rouge_scores = calculate_rouge(result, reference_summary)
