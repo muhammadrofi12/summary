@@ -2,3 +2,4 @@ streamlit
 txtai
 PyPDF2
 rouge-score
+faiss-cpu
