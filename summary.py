@@ -5,16 +5,18 @@ from rouge_score import rouge_scorer
 
 st.set_page_config(layout='wide')
 
+@st.cache(allow_output_mutation=True)
+def load_summary_model():
+    return Summary()
+
 def calculate_rouge(generated_summary, reference_summary):
     scorer = rouge_scorer.RougeScorer(['rouge1', 'rouge2', 'rougeL'], use_stemmer=True)
     scores = scorer.score(generated_summary, reference_summary)
     return scores
 
-
-def summary_text(text):
-    summary = Summary()
+def summary_text(text, summary_model):
     text = (text)
-    result = summary(text)
+    result = summary_model(text)
     return result
 
 # Extract text from the PDF file using pyPDF2
@@ -25,7 +27,9 @@ def extract_text_from_pdf(file_path):
         text = page.extract_text()
     return text
 
-choice = st.sidebar.selectbox('select your choice', ['Summarize Text', 'Summarize Document'])
+summary_model = load_summary_model()
+
+choice = st.sidebar.selectbox('Select your choice', ['Summarize Text', 'Summarize Document'])
 
 if choice == 'Summarize Text':
     st.title('_SummarizeME_ is :blue[cool] :sunglasses:')
@@ -34,22 +38,31 @@ if choice == 'Summarize Text':
     input_text = st.text_area('Enter your text here !')
     if input_text:
         if st.button('Summarize Text'):
-            col1, col2 = st.columns([1,1])
-            with col1:
-                st.markdown("***your input text***")
-                st.info(input_text)
-            with col2:
-                result = summary_text(input_text)
-                st.markdown("***Summary***")
-                st.success(result)
-                
-                # Add reference summary for ROUGE evaluation
-                reference_summary = input_text
+            try:
+                col1, col2 = st.columns([1,1])
+                with col1:
+                    st.markdown("***Your input text***")
+                    st.info(input_text)
+                with col2:
+                    result = summary_text(input_text, summary_model)
+                    st.markdown("***Summary***")
+                    st.success(result)
+                    
+                    # Add reference summary for ROUGE evaluation
+                    reference_summary = input_text
 
-                # Calculate ROUGE scores
-                rouge_scores = calculate_rouge(result, reference_summary)
-                st.subheader("ROUGE Scores:")
-                st.text(f"ROUGE-1 Precision: {rouge_scores['rouge1'].precision}")
-                st.text(f"ROUGE-1 Recall: {rouge_scores['rouge1'].recall}")
-                st.text(f"ROUGE-1 F1 Score: {rouge_scores['rouge1'].fmeasure}")
-                # Similar blocks for ROUGE-2 and ROUGE-L
+                    # Calculate ROUGE scores
+                    rouge_scores = calculate_rouge(result, reference_summary)
+                    st.subheader("ROUGE Scores:")
+                    st.text(f"ROUGE-1 Precision: {rouge_scores['rouge1'].precision:.4f}")
+                    st.text(f"ROUGE-1 Recall: {rouge_scores['rouge1'].recall:.4f}")
+                    st.text(f"ROUGE-1 F1 Score: {rouge_scores['rouge1'].fmeasure:.4f}")
+                    # Similar blocks for ROUGE-2 and ROUGE-L
+                    st.text(f"ROUGE-2 Precision: {rouge_scores['rouge2'].precision:.4f}")
+                    st.text(f"ROUGE-2 Recall: {rouge_scores['rouge2'].recall:.4f}")
+                    st.text(f"ROUGE-2 F1 Score: {rouge_scores['rouge2'].fmeasure:.4f}")
+                    st.text(f"ROUGE-L Precision: {rouge_scores['rougeL'].precision:.4f}")
+                    st.text(f"ROUGE-L Recall: {rouge_scores['rougeL'].recall:.4f}")
+                    st.text(f"ROUGE-L F1 Score: {rouge_scores['rougeL'].fmeasure:.4f}")
+            except Exception as e:
+                st.error(f"An error occurred: {e}")
