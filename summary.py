@@ -10,9 +10,10 @@ def calculate_rouge(generated_summary, reference_summary):
     scores = scorer.score(generated_summary, reference_summary)
     return scores
 
-@st.cache_resource
+# Initialize summarizer outside the function to avoid repeated initialization
+summarizer = pipeline("summarization")
+
 def summary_text(text):
-    summarizer = pipeline("summarization")
     summary = summarizer(text, max_length=150, min_length=30, do_sample=False)
     return summary[0]['summary_text']
 
