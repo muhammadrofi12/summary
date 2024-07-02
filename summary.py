@@ -1,5 +1,5 @@
 import streamlit as st
-from transformers import pipeline
+from txtai.pipeline import Summary
 from PyPDF2 import PdfFileReader
 from rouge_score import rouge_scorer
 
@@ -10,12 +10,12 @@ def calculate_rouge(generated_summary, reference_summary):
     scores = scorer.score(generated_summary, reference_summary)
     return scores
 
-# Initialize summarizer outside the function to avoid repeated initialization
-summarizer = pipeline("summarization", model="t5-base", tokenizer="t5-base", framework="pt")
 
 def summary_text(text):
-    summary = summarizer(text, max_length=150, min_length=30, do_sample=False)
-    return summary[0]['summary_text']
+    summary = Summary()
+    text = (text)
+    result = summary(text)
+    return result
 
 # Extract text from the PDF file using pyPDF2
 def extract_text_from_pdf(file_path):
