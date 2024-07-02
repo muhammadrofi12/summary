@@ -1,5 +1,5 @@
 streamlit
-transformers==4.28.0
+txtai
 PyPDF2
 rouge-score
-txtai
+faiss-cpu
