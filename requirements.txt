@@ -1,5 +1,5 @@
 streamlit
-transformers==4.25.1
+transformers==4.42.3
 txtai==4.0.0
 PyPDF2
 rouge-score
