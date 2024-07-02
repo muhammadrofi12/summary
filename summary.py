@@ -2,6 +2,7 @@ import streamlit as st
 from txtai.pipeline import Summary
 from PyPDF2 import PdfFileReader
 from rouge_score import rouge_scorer
+from transformers.file_utils import cached_path
 
 
 st.set_page_config(layout='wide')
