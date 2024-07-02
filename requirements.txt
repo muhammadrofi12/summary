@@ -2,3 +2,4 @@ streamlit
 transformers==4.28.0
 PyPDF2
 rouge-score
+txtai
