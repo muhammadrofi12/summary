@@ -11,7 +11,7 @@ def calculate_rouge(generated_summary, reference_summary):
     return scores
 
 # Initialize summarizer outside the function to avoid repeated initialization
-summarizer = pipeline("summarization")
+summarizer = pipeline("summarization", model="t5-base", tokenizer="t5-base", framework="pt")
 
 def summary_text(text):
     summary = summarizer(text, max_length=150, min_length=30, do_sample=False)
